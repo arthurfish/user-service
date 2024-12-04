@@ -1,6 +1,7 @@
 package io.github.arthurfish.appender.userservice
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.LoggerFactory
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.stereotype.Service
@@ -8,7 +9,6 @@ import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessageBuilder
 import org.springframework.amqp.core.MessageProperties
 
-// TODO: 改网关服务器，支持header exchange
 
 @Service
 class UserOperationMessageService (
@@ -16,11 +16,13 @@ class UserOperationMessageService (
   private val userRepository: UserRepository,
 ) {
 
+  private val log = LoggerFactory.getLogger(UserOperationMessageService::class.java)
+
   @RabbitListener(queues = ["#{userOperationQueue.name}"])
   fun processUserOperation(message: Map<String, String>) {
     val userId = message["user_id"] ?: "no_body"
     val requestId = message["request_id"] ?: "no_request_id"
-    val operation = message["user_operation"]!!
+    val operation = message["user_operation"] ?: "do_nothing"
 
     val responseHeaders: Map<String, String> = mapOf("user_operation_result" to "success", "request_id" to requestId, "user_id" to userId)
 
@@ -31,8 +33,9 @@ class UserOperationMessageService (
         sendResponseMessage(responseHeaders, responseBody)
       }
       "query_info" -> {
+        log.info("query_info: {}", operation)
         val info = userRepository.findUserInfo(userId)
-        val responseBody = mapOf("user_info" to (info ?: "{}"), "request_id" to requestId, "user_id" to userId)
+        val responseBody = mapOf("user_info" to (info ?: "{}"), "request_id" to requestId, "user_id" to userId, "debug" to "user_query")
         sendResponseMessage(responseHeaders, responseBody)
       }
       "update_credential" -> {
