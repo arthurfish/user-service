@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: example
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+
+# Optional: Hibernate settings for better startup performance
+# hibernate:
+#   ddl-auto: update
