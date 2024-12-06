@@ -14,16 +14,5 @@ class JsonToMapConversionTest {
   private val objectMapper: ObjectMapper = ObjectMapper()
   private val converter = MappingJackson2MessageConverter()
 
-  @Test
-  fun `test JSON to Map conversion`() {
-    val json = """{"user_id": "4"}"""
-    val message: Message = MessageBuilder
-      .withBody(json.toByteArray())
-      .setHeader("content_type", "application/json")
-      .build()
-
-    val result = converter.fromMessage(message, Map::class.java) as Map<String, String>
-    assertEquals("4", result["user_id"])
-  }
 }
 

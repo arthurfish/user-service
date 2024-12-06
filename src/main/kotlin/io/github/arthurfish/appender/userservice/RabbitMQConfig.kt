@@ -7,10 +7,14 @@ import org.springframework.context.annotation.Configuration
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.amqp.core.Queue
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.jdbc.core.simple.JdbcClient
+import org.springframework.stereotype.Component
+import java.util.*
 
 
 @Configuration
@@ -37,15 +41,23 @@ class RabbitMQConfig {
   }
 
   @Bean
-  fun messageConverter(): MessageConverter {
-    val objectMapper = ObjectMapper()
-    return Jackson2JsonMessageConverter(objectMapper)
+  fun messageConverter(): MessageConverter = AppenderRabbitmqMessageConverter()
+
+  @Bean
+  fun rabbitTemplate(connectionFactory: ConnectionFactory): RabbitTemplate {
+    return RabbitTemplate(connectionFactory).apply {
+      messageConverter = messageConverter()
+    }
   }
 
   @Bean
-  fun rabbitTemplate(connectionFactory: ConnectionFactory, messageConverter: MessageConverter): RabbitTemplate {
-    return RabbitTemplate(connectionFactory).apply {
-      this.messageConverter = messageConverter
+  fun reactiveListenerContainerFactory(
+    connectionFactory: ConnectionFactory
+  ): SimpleRabbitListenerContainerFactory {
+    return SimpleRabbitListenerContainerFactory().apply {
+      setConnectionFactory(connectionFactory)
+      setDefaultRequeueRejected(false)
     }
   }
 }
+

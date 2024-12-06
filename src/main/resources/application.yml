@@ -1,6 +1,6 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/postgres
     username: postgres
     password: example
   rabbitmq:
@@ -8,6 +8,11 @@ spring:
     port: 5672
     username: user
     password: password
+    listener:
+      type: simple
+      simple:
+        default-requeue-rejected: false
+
 
 # Optional: Hibernate settings for better startup performance
 # hibernate:

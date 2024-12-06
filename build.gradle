@@ -23,6 +23,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.18.+"
+    implementation platform('io.projectreactor:reactor-bom:2020.0.9')
+    implementation 'io.projectreactor:reactor-core'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactor'
+    implementation 'org.postgresql:r2dbc-postgresql:1.0.7.RELEASE'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
